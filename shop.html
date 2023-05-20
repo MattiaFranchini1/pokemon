@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pokémon</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <script src="https://kit.fontawesome.com/ceab355d8c.js" crossorigin="anonymous"></script>
+</head>
+<style>
+  @media (max-width: 576px) {
+    .card-container {
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex-basis: 100%;
+    }
+  }
+
+
+  .table {
+    border-collapse: collapse;
+  }
+
+  @media (max-width: 576px) {
+    .card {
+      flex-basis: 100%;
+    }
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid black;
+    padding: 8px;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+
+  .card-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    width: 200px;
+    /* Imposta la larghezza desiderata per ogni carta */
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-image {
+    width: 150px;
+    /* Imposta la larghezza desiderata per le immagini delle carte */
+    height: auto;
+    /* Imposta l'altezza in base alla larghezza per mantenere le proporzioni */
+    margin-bottom: 10px;
+  }
+
+  .price {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .buy-button {
+    display: block;
+    width: 100%;
+  }
+
+  .card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .card-wrapper {
+    width: 90%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+
+
+  .not-found-image {
+    max-width: 100%;
+    /* Imposta una larghezza massima per adattarsi al contenitore */
+    height: auto;
+    /* Mantieni l'aspect ratio dell'immagine */
+    max-height: 200px;
+    /* Imposta un'altezza massima desiderata */
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .container {
+    flex: 1;
+  }
+
+  .visible {
+    color: white;
+    /* Change this to your desired text color for the dark mode button */
+    background-color: black;
+    /* Change this to your desired background color for the dark mode button */
+    border: 2px solid white;
+    /* Change this to your desired border color and thickness */
+    padding: 10px 20px;
+    /* Adjust the padding to your desired button size */
+  }
+
+  .circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: black;
+  }
+
+  .fa-moon {
+    color: white;
+  }
+
+  .loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+
+.loading-screen p {
+  margin-top: 10px;
+}
+
+
+</style>
+
+<body data-bs-theme="light" id="corpo">
+
+
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <nav class="navbar bg-body-tertiary">
+      </nav>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="./index.html">Pokédex</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Card shop</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./game.html">Pokémon Quiz</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./about.html">About</a>
+          </li>
+        </ul>
+        <div class="d-flex">
+          <div class="theme-container shadow-dark">
+            <a class="nav-link mx-2 text-uppercase change" onclick="show_cart()">Cart&nbsp;<i
+                class="fa-solid fa-cart-shopping"></i>&nbsp;<span class="badge text-bg-primary"
+                id="num_prod_carrello"></span></a>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="theme-container shadow-dark">
+            <div class="circle" id="cerchio">
+              <i class="fa-solid fa-moon" id="luna" onclick="dark_mode()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <br>
+  <div class="container" style="width: 90%;">
+    <hr>
+    <h1 class="text-center" style="color:red">Card shop</h1>
+    <br>
+    <div class="d-flex">
+      <input class="form-control me-2" type="search" placeholder="Search for a pokémon" aria-label="Search"
+        id="nome_pokemon">
+      <button class="btn btn-outline-success" id="bottone_ricerca">Search</button>
+    </div>
+
+    <br><br>
+    <div id="sort-container" hidden>
+      <label for="sort-select" class="me-2">Ordina per:</label>
+      <select id="sort-select" class="form-select">
+        <option value="default">Predefinito</option>
+        <option value="high-to-low">Prezzo alto-basso</option>
+        <option value="low-to-high">Prezzo basso-alto</option>
+      </select>
+    </div>
+    <br>
+    <div id="loading-screen" class="loading-screen">
+      <img src="./immagini/spinner.gif" alt="Spinner" class="spinner">
+      <p>Caricamento...</p>
+    </div>
+    
+    <div id="card-container" class="card-container">
+      <p>Qua puoi cercare tutte le carte appartenenti ad un determinato pokemon e visionare il prezzo. Puoi anche
+        aggiungere al carrello la carta e acquistarla</p>
+    </div>
+  </div>
+
+  <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cartModalLabel">Carrello</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Caricamento dei file JavaScript di Bootstrap 5 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let cardsArray = [];
+    let carrello = []
+    let num_prodotti = 0;
+
+    if (sessionStorage.getItem("carrello") === null) {
+      carrello = [];
+    } else {
+      carrello = JSON.parse(sessionStorage.getItem("carrello"));
+    }
+
+    console.log(carrello)
+
+    if (sessionStorage.getItem("num_prodotti") === null) {
+      num_prodotti = 0;
+    } else {
+      num_prodotti = JSON.parse(sessionStorage.getItem("num_prodotti"));
+    }
+
+
+    document.getElementById("num_prod_carrello").innerHTML = num_prodotti;
+
+    const cardContainer = document.getElementById('card-container');
+
+
+    if (localStorage.getItem("theme") == "light") {
+      document.getElementById("corpo").setAttribute('data-bs-theme', 'light')
+    } else {
+      document.getElementById("corpo").setAttribute('data-bs-theme', 'dark')
+    }
+
+    function dark_mode() {
+      if (document.getElementById("corpo").getAttribute('data-bs-theme') == 'dark') {
+        document.getElementById("cerchio").style.backgroundColor = "black"
+        document.getElementById("luna").style.color = "white"
+        localStorage.setItem("theme", "light");
+        document.getElementById("corpo").setAttribute('data-bs-theme', 'light')
+      }
+      else {
+        document.getElementById("cerchio").style.backgroundColor = "white"
+        document.getElementById("luna").style.color = "black"
+        localStorage.setItem("theme", "dark");
+        document.getElementById("corpo").setAttribute('data-bs-theme', 'dark')
+      }
+    };
+
+    const sortContainer = document.getElementById('sort-container');
+    const sortSelect = document.getElementById('sort-select');
+
+    sortSelect.addEventListener('change', function () {
+      const sortType = sortSelect.value;
+      sortCardsByPrice(sortType);
+    });
+
+
+
+    cardContainer.addEventListener('click', function (event) {
+      const target = event.target;
+      if (target.classList.contains('buy-button')) {
+        const cardIndex = target.dataset.cardIndex;
+        // Esegui l'azione desiderata per il pulsante "Acquista" della carta con indice cardIndex
+        const selectedCard = cardsArray[cardIndex];
+        console.log(selectedCard)
+        alert("Aggiunto al carrello");
+        addToCart(selectedCard);
+        target.setAttribute('data-quantity', selectedCard.quantity);
+      }
+    });
+
+    function addToCart(card) {
+      const existingItem = carrello.find((item) => item.url === card.url);
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        card.quantity = 1;
+        carrello.push(card);
+      }
+      //console.log("CARRELLO: >>>>> ", carrello)
+      num_prodotti++;
+      sessionStorage.setItem("carrello", JSON.stringify(carrello));
+      sessionStorage.setItem("num_prodotti", num_prodotti);
+      //console.log("SESS: >", JSON.parse(sessionStorage.getItem("carrello")))
+      document.getElementById("num_prod_carrello").innerHTML = num_prodotti;
+      // Esegui le operazioni desiderate per aggiungere la carta al carrello
+      console.log('Cart added:', card);
+    }
+
+    const loadingScreen = document.getElementById('loading-screen');
+
+    function showLoadingScreen() {
+      loadingScreen.style.display = 'flex';
+    }
+
+    function hideLoadingScreen() {
+      loadingScreen.style.display = 'none';
+    }
+
+
+
+
+    function sortCardsByPrice(sortType) {
+      cardsArray.sort(function (cardA, cardB) {
+        const priceA = isNaN(cardA.price) ? Number.POSITIVE_INFINITY : parseFloat(cardA.price);
+        const priceB = isNaN(cardB.price) ? Number.POSITIVE_INFINITY : parseFloat(cardB.price);
+
+        if (sortType === 'high-to-low') {
+          return priceB - priceA;
+        } else if (sortType === 'low-to-high') {
+          return priceA - priceB;
+        }
+
+        return 0;
+      });
+
+      cardContainer.innerHTML = '';
+
+      if (cardsArray.length > 0) {
+        showSortContainer();
+
+        const cardWrapper = document.createElement('div');
+        cardWrapper.classList.add('card-wrapper');
+
+        cardsArray.forEach((card, index) => {
+          const cardDiv = document.createElement('div');
+          cardDiv.classList.add('card');
+
+          const cardImage = document.createElement('img');
+          cardImage.src = card.url;
+          cardImage.classList.add('card-image');
+
+          const cardPrice = document.createElement('span');
+          cardPrice.classList.add('price');
+          if (isNaN(card.price)) {
+            cardPrice.textContent = card.price;
+          } else {
+            cardPrice.textContent = "€ " + card.price.toFixed(2);
+          }
+
+          const buyButton = document.createElement('button');
+          buyButton.classList.add('buy-button', 'btn', 'btn-success');
+          buyButton.setAttribute('data-card-index', index);
+          buyButton.textContent = "Acquista";
+          if (isNaN(card.price)) {
+            buyButton.disabled = true;
+          }
+
+          cardDiv.appendChild(cardImage);
+          cardDiv.appendChild(cardPrice);
+          cardDiv.appendChild(buyButton);
+          cardWrapper.appendChild(cardDiv);
+        });
+
+        cardContainer.appendChild(cardWrapper);
+      } else {
+        hideSortContainer();
+        const notFoundMessage = document.createElement('p');
+        notFoundMessage.style.color = "red";
+        notFoundMessage.textContent = "Pokemon non trovato. Riprova con un altro nome.";
+        cardContainer.appendChild(notFoundMessage);
+
+        const notFoundImage = document.createElement('img');
+        notFoundImage.src = './immagini/notfound.png';
+        notFoundImage.classList.add('not-found-image');
+        cardContainer.appendChild(notFoundImage);
+
+        console.log("Qualcosa è andato storto");
+      }
+    }
+
+
+
+
+    const button = document.getElementById('bottone_ricerca'); // Riferimento al tuo bottone, assicurati che abbia l'ID corretto
+
+    const input = document.getElementById("nome_pokemon")
+    input.addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        button.click();
+      }
+    });
+
+    button.addEventListener('click', function () {
+      let nome = document.getElementById("nome_pokemon").value;
+      document.getElementById("nome_pokemon").value = "";
+
+      showLoadingScreen();
+
+      fetch('https://api.pokemontcg.io/v2/cards?q=name:' + nome)
+        .then(response => response.json())
+        .then(data => {
+          hideLoadingScreen();
+          const carte = data.data;
+          cardsArray = [];
+
+          carte.forEach((card) => {
+            const url = card.images.small;
+            const price = card.cardmarket?.prices?.averageSellPrice || "NON DISPONIBILE";
+            const cardObj = { url, price };
+            cardsArray.push(cardObj);
+          });
+
+          cardContainer.innerHTML = "";
+
+          if (cardsArray.length > 0) {
+            sortSelect.value = "default";
+            showSortContainer();
+
+            const cardWrapper = document.createElement('div');
+            cardWrapper.classList.add('card-wrapper');
+
+            cardsArray.forEach((card, index) => {
+              const cardDiv = document.createElement('div');
+              cardDiv.classList.add('card');
+
+              const cardImage = document.createElement('img');
+              cardImage.src = card.url;
+              cardImage.classList.add('card-image');
+
+              const cardPrice = document.createElement('span');
+              cardPrice.classList.add('price');
+              if (isNaN(card.price)) {
+                cardPrice.textContent = card.price;
+              } else {
+                cardPrice.textContent = "€ " + card.price.toFixed(2);
+              }
+
+              const buyButton = document.createElement('button');
+              buyButton.classList.add('buy-button', 'btn', 'btn-success');
+              buyButton.setAttribute('data-card-index', index);
+              buyButton.textContent = "Acquista";
+              if (isNaN(card.price)) {
+                buyButton.disabled = true;
+              }
+
+              cardDiv.appendChild(cardImage);
+              cardDiv.appendChild(cardPrice);
+              cardDiv.appendChild(buyButton);
+              cardWrapper.appendChild(cardDiv);
+            });
+
+            cardContainer.appendChild(cardWrapper);
+          } else {
+            hideSortContainer();
+            const notFoundMessage = document.createElement('p');
+            notFoundMessage.style.color = "red";
+            notFoundMessage.textContent = "Pokemon non trovato. Riprova con un altro nome.";
+            cardContainer.appendChild(notFoundMessage);
+
+            const notFoundImage = document.createElement('img');
+            notFoundImage.src = './immagini/notfound.png';
+            notFoundImage.classList.add('not-found-image');
+            cardContainer.appendChild(notFoundImage);
+
+            console.log("Qualcosa è andato storto");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          hideLoadingScreen();
+        });
+    });
+
+
+
+
+
+
+    function showSortContainer() {
+      sortContainer.hidden = false;
+    }
+
+    function hideSortContainer() {
+      sortContainer.hidden = true;
+    }
+
+
+
+
+    let currentModal = null;
+
+    function show_cart() {
+      // Chiude il modal precedente se è aperto
+      if (currentModal) {
+        currentModal.hide();
+      }
+
+      const modalBody = document.getElementById('modal-body');
+      modalBody.innerHTML = '';
+
+      if (carrello.length === 0) {
+        const emptyCartMessage = document.createElement('p');
+        emptyCartMessage.textContent = "Il carrello è vuoto";
+        modalBody.appendChild(emptyCartMessage);
+        const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+        cartModal.show();
+        return;
+      }
+
+      const table = document.createElement('table');
+      table.classList.add('table', 'table-striped');
+
+      let totalPrice = 0;
+
+      carrello.forEach((card, index) => {
+        const row = document.createElement('tr');
+
+        const imageCell = document.createElement('td');
+        const cardImage = document.createElement('img');
+        cardImage.src = card.url;
+        cardImage.style.maxHeight = '100px';
+        imageCell.appendChild(cardImage);
+        row.appendChild(imageCell);
+
+        const detailsCell = document.createElement('td');
+        const cardName = document.createElement('h5');
+        cardName.textContent = card.name;
+        const cardQuantity = document.createElement('span');
+        cardQuantity.textContent = `Quantità: ${card.quantity}`;
+        const cardPrice = document.createElement('span');
+        cardPrice.textContent = `Prezzo: € ${(card.price * card.quantity).toFixed(2)}`;
+        detailsCell.appendChild(cardName);
+        detailsCell.appendChild(cardQuantity);
+        detailsCell.appendChild(document.createElement('br'));
+        detailsCell.appendChild(cardPrice);
+        row.appendChild(detailsCell);
+
+        const removeButtonCell = document.createElement('td');
+        const removeButton = document.createElement('button');
+        removeButton.classList.add('btn', 'btn-danger', 'btn-sm');
+        removeButton.style.color = "green"
+        removeButton.textContent = 'Rimuovi';
+        removeButton.addEventListener('click', function () {
+          removeCartItem(index);
+        });
+        removeButtonCell.appendChild(removeButton);
+        row.appendChild(removeButtonCell);
+
+        table.appendChild(row);
+
+        totalPrice += parseFloat(card.price) * card.quantity;
+      });
+
+      modalBody.appendChild(table);
+
+      const totalRow = document.createElement('div');
+      totalRow.classList.add('row', 'justify-content-end', 'mt-3', 'fw-bold');
+
+      const totalLabel = document.createElement('div');
+      totalLabel.classList.add('col-6', 'text-end');
+      totalLabel.textContent = 'Totale:';
+
+      const totalPriceCell = document.createElement('div');
+      totalPriceCell.classList.add('col-2', 'text-end');
+      totalPriceCell.textContent = "€ " + totalPrice.toFixed(2);
+
+      totalRow.appendChild(totalLabel);
+      totalRow.appendChild(totalPriceCell);
+
+      modalBody.appendChild(totalRow);
+
+      const orderButton = document.createElement('button');
+      orderButton.classList.add('btn', 'btn-success', 'mt-3');
+      orderButton.textContent = 'Effettua ordine';
+
+      modalBody.appendChild(orderButton);
+
+      // Mostra il modal
+      const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+      cartModal.show();
+
+      // Memorizza il riferimento al modal corrente
+      currentModal = cartModal;
+
+      // Aggiungi l'evento click al pulsante "Effettua ordine"
+      orderButton.addEventListener('click', function () {
+        placeOrder(totalPrice, cartModal);
+      });
+
+    }
+
+    function removeCartItem(index) {
+      const removedItem = carrello[index];
+      if (removedItem.quantity > 1) {
+        removedItem.quantity--;
+      } else {
+        carrello.splice(index, 1);
+      }
+      num_prodotti--;
+      sessionStorage.setItem("carrello", JSON.stringify(carrello));
+      sessionStorage.setItem("num_prodotti", num_prodotti);
+      //show_cart(); // Aggiorna il carrello visualizzato
+      if (currentModal) {
+        currentModal.hide();
+      }
+      document.getElementById("num_prod_carrello").innerHTML = num_prodotti;
+    }
+
+    function placeOrder(totalPrice, modal) {
+      sessionStorage.removeItem("carrello")
+      sessionStorage.removeItem("num_prodotti")
+      num_prodotti = 0;
+      carrello = [];
+      document.getElementById("num_prod_carrello").innerHTML = num_prodotti;
+
+
+      const modalBody = document.getElementById('modal-body');
+      modalBody.innerHTML = '';
+
+
+      const confirmationMessage = document.createElement('p');
+      confirmationMessage.textContent = `Grazie per l'acquisto di € ${totalPrice.toFixed(2)}, il pacco verrà spedito il prima possibile.`;
+      modalBody.appendChild(confirmationMessage);
+
+
+      setTimeout(function () {
+        modal.hide();
+
+      }, 10000);
+    }
+
+
+
+
+  </script>
+
+  <br><br><br>
+  <div class="footer">
+    <footer class="py-3 my-4">
+      <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+        <a href="https://www.itispaleocapa.edu.it/" style="text-decoration: none;"><i
+            class="fa-solid fa-school"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="https://github.com/MattiaFranchini1" style="text-decoration: none;"><i
+            class="fa-brands fa-github"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="https://www.instagram.com/matti5_/" style="text-decoration: none;"><i
+            class="fa-brands fa-instagram"></i></a>
+      </ul>
+      <p class="text-center text-body-secondary">&copy; 2023 Mattia Franchini - 4IC - ITIS PALEOCAPA - SITO CREATO PER
+        SCOPI DIDATTICI</p>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+    integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
